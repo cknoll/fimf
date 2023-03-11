@@ -1,0 +1,41 @@
+[build-system]
+
+# setuptools-scm helps to find package-data which is tracked by git
+# anyway, make sure the following packages are installed
+# pip install build setuptools_scm
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+
+
+name = "fimf"
+description = "..."
+authors=[{name = "Carsten Knoll", email = "firstname.lastname@posteo.org"}]
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "GNU General Public License v3 (GPLv3)" }
+
+dynamic = ["dependencies", "version"]
+
+classifiers=[
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+]
+
+
+[project.urls]
+Homepage = "..."
+
+[project.scripts]
+fimf = "fimf.script:main"
+
+[tool.setuptools.packages.find]
+# note: `include-package-data = true` by default in pyproject.toml
+where = ["src"]
+
+# see https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#attr
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+version = {attr = "fimf.__version__"}

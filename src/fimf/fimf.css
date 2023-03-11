@@ -1,0 +1,62 @@
+Screen {
+    background: $panel;
+    align: center middle;
+    layout: vertical;
+}
+
+#lb_intro {
+    content-align: center middle;
+    height: 3;
+    margin: 1;
+    text-style: bold;
+    background: $secondary-background;
+    width: 100%;
+}
+#cntn_buttons {
+
+    align: center middle;
+    margin: 1 0 0 0;
+    max-height: 8;
+    width: 98%;
+
+
+}
+
+#in_search {
+
+    background: $primary-lighten-3;
+}
+
+#in_replace {
+
+    background: $warning-lighten-3;
+}
+
+
+Button {
+    width: 1fr;
+    margin: 3;
+}
+
+
+.results {
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+/*     overflow-y: auto; */
+
+}
+
+/* for help screen */
+#dialog {
+    grid-size: 2;
+    grid-gutter: 1 2;
+    padding: 1 2;
+}
+
+#question {
+    column-span: 2;
+    content-align: center bottom;
+    width: 100%;
+    height: 100%;
+}
