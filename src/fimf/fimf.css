@@ -4,6 +4,14 @@ Screen {
     layout: vertical;
 }
 
+Button, .results, Input {
+  border: blank $accent;
+}
+
+*:focus {
+    border: round $accent;
+}
+
 #lb_intro {
     content-align: center middle;
     height: 3;
@@ -12,13 +20,17 @@ Screen {
     background: $secondary-background;
     width: 100%;
 }
+
 #cntn_buttons {
 
     align: center middle;
-    margin: 1 0 0 0;
-    max-height: 8;
-    width: 98%;
+    offset: 3w 0;
+/*     margin: 0 auto 0 auto; */
+    max-height: 9;
+    width: 94w;
 
+/*  outline is helpful for debugging    */
+/*     outline: solid red; */
 
 }
 
@@ -34,8 +46,10 @@ Screen {
 
 
 Button {
-    width: 1fr;
-    margin: 3;
+    width: 30w;
+    box-sizing: content-box;
+    /* top right bottom left  */
+    margin: 0 5 0 5;
     text-align: center;
 }
 
