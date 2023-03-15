@@ -11,6 +11,6 @@ Development mode: Clone the repo and run `pip install -e .` from within that dir
 
 ## Usage
 
-Call `fimf` (the gui should be self-explanatory).
+Call `fimf` (the gui should be self-explanatory, anyway: press `F1` for help).
 
 
