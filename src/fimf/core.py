@@ -32,20 +32,20 @@ class CustomApp(App):
         self.button_quit = Button("Quit (CTRL+C)", id="btn_quit", variant="error")
         self.label_results = Label("Results", id="lb_results")
         self.results = TextLog(markup=True, classes="results")
+        self.statusbar = Label("no search results yet", id="statusbar", classes="")
 
         yield self.intro
         yield self.input_files
         yield self.input_search
         yield self.input_replace
 
-        with Vertical():
-            with Horizontal(id="cntn_buttons"):
-                yield self.button_search
-                yield self.button_replace
-                yield self.button_quit
+        with Horizontal(id="cntn_buttons"):
+            yield self.button_search
+            yield self.button_replace
+            yield self.button_quit
 
-            yield self.results
-            yield self.results
+        yield self.results
+        yield self.statusbar
         yield Footer()
 
     def on_mount(self) -> None:
@@ -81,6 +81,8 @@ class CustomApp(App):
         # for testing
         if not file_pattern:
             file_pattern = "*.njk"
+        if not search_pattern:
+            search_pattern = "widht"
 
         self.results.clear()
         if not search_pattern:
@@ -94,15 +96,30 @@ class CustomApp(App):
             return
 
 
-        results = find_pattern("./", search_pattern, file_pattern)
-        indent = " " * 4
+        startpath = os.path.abspath("./")
+        results = find_pattern(startpath, search_pattern, file_pattern)
+        indent = " " * 2
+
+        file_count = 0
+        match_count = 0
+
         for path, matches in results.items():
             if not matches:
                 continue
-            self.results.write(f"{path} ({len(matches)})")
-            for line_number, match in matches.items():
-                self.results.write(f"{indent}{line_number:03d}: {match[0]}")
-            self.results.write("\n"*2)
+
+            localpath = path.replace(startpath, "./")
+            lm = len(matches)
+            file_count += 1
+            match_count += lm
+            self.results.write(f"[white on blue]{localpath} ({lm})")
+            for match_obj in matches:
+                self.results.write(f"{indent}{match_obj.line_number:03d}: {match_obj.context_str}")
+            self.results.write(" ")
+
+        # improve visual presentation of the result
+        self.results.focus()
+        self.statusbar.update(f"found {match_count} matches in {file_count} files")
+        self.statusbar.add_class("sb_active")
 
 
 class HelpScreen(Screen):
@@ -120,16 +137,50 @@ class HelpScreen(Screen):
         else:
             self.app.pop_screen()
 
+class Match():
+
+    def __init__(self, line_number, line, match):
+        self.line_number = line_number
+        self.line = line.rstrip("\n")
+        self.re_match = match
+
+        i_start, i_end = match.span(0)
+
+        full_match = match.group(0)
+        l_max = 80
+        l_match = i_end - i_start
+        diff = l_max - l_match
+        l_line = len(line)
+        if diff < 10:
+            # there is no space for context
+            hl_txt = full_match[:l_max]
+            txt0 = ""
+            txt1 = ""
+        else:
+            l0 = (diff//2)
+            l1 = diff - l0
+            # padding of the line
+
+            i0 = i_start - l0
+            if i0 < 0:
+                i0 = 0
+
+            i1 = i_end + l1
+            if i1 > l_line:
+                i1 = l_line
+            hl_txt = full_match
+            txt0 = line[i0:i_start]
+            txt1 = line[i_end:i1]
+
+        self.context_str = f"…{txt0}[#F0A0F0 on #305030]{hl_txt}[/]{txt1.rstrip()}…"
+
 
 def find_matches(filename, compiled_pattern):
-    matches = {}
+    matches = []
     with open(filename, "r") as f:
         for i, line in enumerate(f, start=1):
             for match in re.finditer(compiled_pattern, line):
-                if i not in matches:
-                    matches[i] = [match.group()]
-                else:
-                    matches[i].append(match.group())
+                matches.append(Match(i, line, match))
     return matches
 
 
