@@ -7,6 +7,11 @@ from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, Grid
 from textual.screen import Screen
 from textual.widgets import Static, Input, Footer, Button, TextLog, Label
+from textual import log
+
+
+# note: log-output is visible if this application is stated with `textual run --dev <script.py>`
+# and `textual console` in another window
 
 
 class CustomApp(App):
@@ -34,6 +39,8 @@ class CustomApp(App):
         self.results = TextLog(markup=True, classes="results")
         self.statusbar = Label("no search results yet", id="statusbar", classes="")
 
+        self.search_result = None
+
         yield self.intro
         yield self.input_files
         yield self.input_search
@@ -43,6 +50,7 @@ class CustomApp(App):
             yield self.button_search
             yield self.button_replace
             yield self.button_quit
+            yield Label("x"*5,)
 
         yield self.results
         yield self.statusbar
@@ -57,7 +65,9 @@ class CustomApp(App):
         if event.button.id == "btn_search":
             self.action_do_search()
         elif event.button.id == "btn_quit":
-            self.exit(str(event.button))
+            self.exit()
+        elif event.button.id == "btn_replace":
+            self.action_do_replace()
         else:
             # !! unexpected -> raise exception
             pass
@@ -120,6 +130,10 @@ class CustomApp(App):
         self.results.focus()
         self.statusbar.update(f"found {match_count} matches in {file_count} files")
         self.statusbar.add_class("sb_active")
+
+    def action_do_replace(self):
+        if self.search_result is None:
+            log("Cannot replace: no search result available.")
 
 
 class HelpScreen(Screen):
