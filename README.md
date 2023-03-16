@@ -3,10 +3,17 @@
 # fimf – Find and Replace in Multiple Files
 
 
+![fimf screenshot](doc/screenshot.png "screenshot of fimf: terminal application (text based ui) with 3 input fields, 3 buttons and other widgets")
+
+## Development Status
+
+"pre-alpha" (not yet useful)
+
 ## Installation
 
-Normal usage mode: `pip install fimf`
 Development mode: Clone the repo and run `pip install -e .` from within that directory.
+
+Normal usage mode: `pip install fimf` (available soon)
 
 
 ## Usage
