@@ -2,6 +2,7 @@ import os
 import re
 from collections import defaultdict
 import fnmatch
+from collections import UserDict
 
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, Grid
@@ -90,9 +91,10 @@ class CustomApp(App):
 
         # for testing
         if not file_pattern:
-            file_pattern = "*.njk"
+            file_pattern = "*"
         if not search_pattern:
-            search_pattern = "widht"
+            search_pattern = "abcde"
+            self.input_search.insert_text_at_cursor(search_pattern)
 
         self.results.clear()
         if not search_pattern:
@@ -108,7 +110,7 @@ class CustomApp(App):
 
         startpath = os.path.abspath("./")
         results = find_pattern(startpath, search_pattern, file_pattern)
-        indent = " " * 2
+        indent = " " * 0
 
         file_count = 0
         match_count = 0
@@ -121,14 +123,15 @@ class CustomApp(App):
             lm = len(matches)
             file_count += 1
             match_count += lm
-            self.results.write(f"[white on blue]{localpath} ({lm})")
+            self.results.write(f"[#ffcc00 on #6f94dc]{localpath} ({lm})")
             for match_obj in matches:
-                self.results.write(f"{indent}{match_obj.line_number:03d}: {match_obj.context_str}")
+                lnbr = f"[white on blue]{match_obj.line_number:03d}:[/] "
+                self.results.write(f"{indent}{lnbr}{match_obj.context_str}")
             self.results.write(" ")
 
         # improve visual presentation of the result
         self.results.focus()
-        self.statusbar.update(f"found {match_count} matches in {file_count} files")
+        self.statusbar.update(f"found {match_count} matches in {file_count} files (of {results.total_files} files)")
         self.statusbar.add_class("sb_active")
 
     def action_do_replace(self):
@@ -199,9 +202,11 @@ def find_matches(filename, compiled_pattern):
 
 
 def find_pattern(directory, search_pattern, file_pattern):
-    results = {}
+    results = UserDict()
+    results.total_files = 0
     for path, dirs, files in os.walk(os.path.abspath(directory)):
         for filename in fnmatch.filter(files, file_pattern):
+            results.total_files += 1
             filepath = os.path.join(path, filename)
             matches = find_matches(filepath, search_pattern)
             results[filepath] = matches
