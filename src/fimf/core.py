@@ -37,16 +37,14 @@ class PartneredTextLog(TextLog):
         super().scroll_up(*args, **kwargs)
 
 
-class CustomApp(App):
+class FimfApp(App):
     CSS_PATH = "fimf.css"
     BINDINGS = [
         ("f1", "help", "help"),
         ("f3", "do_search", "search"),
+        ("f4", "do_replacement", "replace"),
         ("f10", "open_menu", "menu"),
-        ("escape", "cmd_select", "command mode"),
-        ("p", "plain_text_select", "mode: plain text"),
-        ("e", "escape_seq_select", "mode: escape-sequences"),
-        ("t", "regex_select", "mode: regex"),
+        ("escape", "esc_pressed", "command mode"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -120,6 +118,11 @@ class CustomApp(App):
 
     def action_cmd_select(self) -> None:
         self.screen.set_focus(None)
+
+    def action_esc_pressed(self) -> None:
+
+        if self.app.screen_stack[-1].id != "_default":
+            self.app.pop_screen()
 
     def action_do_search(self):
         file_pattern = self.input_files.value
@@ -304,7 +307,7 @@ def findReplace(directory, find, replace, filePattern):
 
 def main():
 
-    app = CustomApp()
+    app = FimfApp()
     app.run()
 
 
