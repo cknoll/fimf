@@ -70,15 +70,17 @@ class CustomApp(App):
         self.search_result = None
 
         yield self.intro
-        with Horizontal(id="cntn_input_fields"):
+        with Horizontal(id="cntn_input_fields2", classes="cntn_input_fields"):
+            yield self.button_quit
             yield self.input_files
+
+        with Horizontal(id="cntn_input_fields1", classes="cntn_input_fields"):
             yield self.input_search
             yield self.input_replace
 
         with Horizontal(id="cntn_buttons"):
             yield self.button_search
             yield self.button_replace
-            yield self.button_quit
 
         with Horizontal(id="cntn_results"):
             yield self.search_results

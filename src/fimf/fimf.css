@@ -23,7 +23,7 @@ Button, .results, Input {
     width: 100%;
 }
 
-#cntn_input_fields {
+.cntn_input_fields {
     align: center middle;
     width: 100w;
     height: 3;
