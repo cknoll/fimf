@@ -95,6 +95,9 @@ class CustomApp(App):
         if not search_pattern:
             search_pattern = "abcde"
             self.input_search.insert_text_at_cursor(search_pattern)
+        if not replace_pattern:
+            replace_pattern = "ABC"
+            self.input_replace.insert_text_at_cursor(replace_pattern)
 
         self.results.clear()
         if not search_pattern:
@@ -109,7 +112,7 @@ class CustomApp(App):
 
 
         startpath = os.path.abspath("./")
-        results = find_pattern(startpath, search_pattern, file_pattern)
+        results = find_pattern(startpath, search_pattern, file_pattern, replace_pattern)
         indent = " " * 0
 
         file_count = 0
@@ -156,7 +159,7 @@ class HelpScreen(Screen):
 
 class Match():
 
-    def __init__(self, line_number, line, match):
+    def __init__(self, line_number, line, match, rplmt=None):
         self.line_number = line_number
         self.line = line.rstrip("\n")
         self.re_match = match
@@ -164,7 +167,7 @@ class Match():
         i_start, i_end = match.span(0)
 
         full_match = match.group(0)
-        l_max = 80
+        l_max = 50
         l_match = i_end - i_start
         diff = l_max - l_match
         l_line = len(line)
@@ -191,24 +194,28 @@ class Match():
 
         self.context_str = f"…{txt0}[#F0A0F0 on #305030]{hl_txt}[/]{txt1.rstrip()}…"
 
+        if rplmt is not None:
+            add_str = f"    [bold red]→[/]    …{txt0}[#F0A0F0 on #303050]{rplmt}[/]{txt1.rstrip()}…"
+            self.context_str = f"{self.context_str}{add_str}"
 
-def find_matches(filename, compiled_pattern):
+
+def find_matches(filename, compiled_pattern, replace_pattern):
     matches = []
     with open(filename, "r") as f:
         for i, line in enumerate(f, start=1):
             for match in re.finditer(compiled_pattern, line):
-                matches.append(Match(i, line, match))
+                matches.append(Match(i, line, match, replace_pattern))
     return matches
 
 
-def find_pattern(directory, search_pattern, file_pattern):
+def find_pattern(directory, search_pattern, file_pattern, replace_pattern):
     results = UserDict()
     results.total_files = 0
     for path, dirs, files in os.walk(os.path.abspath(directory)):
         for filename in fnmatch.filter(files, file_pattern):
             results.total_files += 1
             filepath = os.path.join(path, filename)
-            matches = find_matches(filepath, search_pattern)
+            matches = find_matches(filepath, search_pattern, replace_pattern)
             results[filepath] = matches
 
     return results
