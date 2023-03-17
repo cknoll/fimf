@@ -21,37 +21,54 @@ Button, .results, Input {
     width: 100%;
 }
 
+#cntn_input_fields {
+    align: center middle;
+    width: 100w;
+    height: 3;
+/*     offset: 3w 0; */
+
+}
 #cntn_buttons {
 
     align: center middle;
-    offset: 3w 0;
-/*     margin: 0 auto 0 auto; */
+/*     offset: 3w 0; */
     max-height: 9;
-    width: 94w;
+    width: 100w;
 
 /*  outline is helpful for debugging    */
 /*     outline: solid red; */
 
 }
 
+
+.input_field {
+
+    width: 35;
+    margin: 0 3 0 3;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+Button {
+    width: 35;
+    /* top right bottom left  */
+    margin: 0 3 0 3;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#in_files {
+    background: $primary-lighten-2 40%;
+}
 #in_search {
 
     background: $primary-lighten-3;
 }
 
 #in_replace {
-
     background: $warning-lighten-3;
 }
 
-
-Button {
-    width: 30w;
-    box-sizing: content-box;
-    /* top right bottom left  */
-    margin: 0 5 0 5;
-    text-align: center;
-}
 
 
 .results {

@@ -28,9 +28,9 @@ class CustomApp(App):
     def compose(self) -> ComposeResult:
 
         self.intro = Label("fimf – find and replace in multiple files", id="lb_intro")
-        self.input_files = Input(placeholder="file pattern", id="in_files")
-        self.input_search = Input(placeholder="search pattern", id="in_search")
-        self.input_replace = Input(placeholder="replace pattern", id="in_replace")
+        self.input_files = Input(placeholder="file pattern", id="in_files", classes="input_field")
+        self.input_search = Input(placeholder="search pattern", id="in_search", classes="input_field")
+        self.input_replace = Input(placeholder="replace pattern", id="in_replace", classes="input_field")
 
         self.button_search = Button("Search (F3)", id="btn_search", variant="primary")
         self.button_replace = Button("Replace All", id="btn_replace", variant="warning")
@@ -42,15 +42,15 @@ class CustomApp(App):
         self.search_result = None
 
         yield self.intro
-        yield self.input_files
-        yield self.input_search
-        yield self.input_replace
+        with Horizontal(id="cntn_input_fields"):
+            yield self.input_files
+            yield self.input_search
+            yield self.input_replace
 
         with Horizontal(id="cntn_buttons"):
             yield self.button_search
             yield self.button_replace
             yield self.button_quit
-            yield Label("x"*5,)
 
         yield self.results
         yield self.statusbar
