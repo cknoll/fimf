@@ -32,7 +32,7 @@ Button, .results, Input {
 
     align: center middle;
 /*     offset: 3w 0; */
-    max-height: 9;
+    height: 5;
     width: 100w;
 
 /*  outline is helpful for debugging    */
@@ -70,11 +70,25 @@ Button {
 }
 
 
+#cntn_results {
+
+    align: center middle;
+/*     offset: 3w 0; */
+    width: 100w;
+
+/*  outline is helpful for debugging    */
+/*     outline: solid red; */
+    height: 32;
+    overflow-y: auto;
+
+}
+
 
 .results {
-    width: 100%;
+    width: 48%;
 /*     min-height: 25; */
     height: 30;
+    margin-left: 1;
     overflow-x: auto;
     overflow-y: auto;
 

@@ -37,7 +37,8 @@ class CustomApp(App):
         self.button_replace = Button("Replace All", id="btn_replace", variant="warning")
         self.button_quit = Button("Quit (CTRL+C)", id="btn_quit", variant="error")
         self.label_results = Label("Results", id="lb_results")
-        self.results = TextLog(markup=True, classes="results")
+        self.search_results = TextLog(markup=True, classes="results")
+        self.replace_results = TextLog(markup=True, classes="results")
         self.statusbar = Label("no search results yet", id="statusbar", classes="")
 
         self.search_result = None
@@ -53,7 +54,10 @@ class CustomApp(App):
             yield self.button_replace
             yield self.button_quit
 
-        yield self.results
+        with Horizontal(id="cntn_results"):
+            yield self.search_results
+            yield self.replace_results
+
         yield self.statusbar
         yield Footer()
 
@@ -99,15 +103,16 @@ class CustomApp(App):
             replace_pattern = "ABC"
             self.input_replace.insert_text_at_cursor(replace_pattern)
 
-        self.results.clear()
+        self.search_results.clear()
+        self.replace_results.clear()
         if not search_pattern:
-            self.results.write("error: empty search pattern")
+            self.search_results.write("error: empty search pattern")
             return
 
         try:
             search_pattern = re.compile(search_pattern)
         except re.error as ex:
-            self.results.write(f"regex error: {ex}")
+            self.search_results.write(f"regex error: {ex}")
             return
 
 
@@ -126,14 +131,19 @@ class CustomApp(App):
             lm = len(matches)
             file_count += 1
             match_count += lm
-            self.results.write(f"[#ffcc00 on #6f94dc]{localpath} ({lm})")
+            self.search_results.write(f"[#ffcc00 on #6f94dc]{localpath} ({lm})")
+            self.replace_results.write(f"[#ffcc00 on #6f94dc]{localpath} ({lm})")
             for match_obj in matches:
                 lnbr = f"[white on blue]{match_obj.line_number:03d}:[/] "
-                self.results.write(f"{indent}{lnbr}{match_obj.context_str}")
-            self.results.write(" ")
+                self.search_results.write(f"{indent}{lnbr}{match_obj.context_str}")
+                self.replace_results.write(f"{indent}{lnbr}{match_obj.context_rpl_str}")
+
+            # add an empty line after each file
+            self.search_results.write(" ")
+            self.replace_results.write(" ")
 
         # improve visual presentation of the result
-        self.results.focus()
+        self.search_results.focus()
         self.statusbar.update(f"found {match_count} matches in {file_count} files (of {results.total_files} files)")
         self.statusbar.add_class("sb_active")
 
@@ -195,8 +205,9 @@ class Match():
         self.context_str = f"…{txt0}[#F0A0F0 on #305030]{hl_txt}[/]{txt1.rstrip()}…"
 
         if rplmt is not None:
-            add_str = f"    [bold red]→[/]    …{txt0}[#F0A0F0 on #303050]{rplmt}[/]{txt1.rstrip()}…"
-            self.context_str = f"{self.context_str}{add_str}"
+            self.context_rpl_str = f"…{txt0}[#F0A0F0 on #303050]{rplmt}[/]{txt1.rstrip()}…"
+        else:
+            self.context_rpl_str = self.context_str
 
 
 def find_matches(filename, compiled_pattern, replace_pattern):
