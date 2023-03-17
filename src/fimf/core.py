@@ -141,7 +141,6 @@ class CustomApp(App):
             self.search_results.write(f"regex error: {ex}")
             return
 
-
         startpath = os.path.abspath("./")
         results = find_pattern(startpath, search_pattern, file_pattern, replace_pattern)
         indent = " " * 0
@@ -200,8 +199,8 @@ class HelpScreen(Screen):
         else:
             self.app.pop_screen()
 
-class Match():
 
+class Match:
     def __init__(self, line_number, line, match, rplmt=None):
         self.line_number = line_number
         self.line = line.rstrip("\n")
@@ -220,7 +219,7 @@ class Match():
             txt0 = ""
             txt1 = ""
         else:
-            l0 = (diff//2)
+            l0 = diff // 2
             l1 = diff - l0
             # padding of the line
 

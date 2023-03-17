@@ -15,7 +15,6 @@ def main():
     from textual.cli.cli import run
     import sys
 
-
     sys.argv = f"textual run --dev {core.__file__}".split()
     sys.exit(run())
 
