@@ -15,6 +15,28 @@ from textual import log
 # and `textual console` in another window
 
 
+class PartneredTextLog(TextLog):
+    """
+    This class implements scrolling such that any scrolling event also triggers the scrolling of a partner widget.
+    """
+
+    # Down
+    def scroll_down(self, *args, **kwargs):
+        self.pure_scroll_down(*args, **kwargs)
+        self.partner.pure_scroll_down(*args, **kwargs)
+
+    def pure_scroll_down(self, *args, **kwargs):
+        super().scroll_down(*args, **kwargs)
+
+    # Up
+    def scroll_up(self, *args, **kwargs):
+        self.pure_scroll_up(*args, **kwargs)
+        self.partner.pure_scroll_up(*args, **kwargs)
+
+    def pure_scroll_up(self, *args, **kwargs):
+        super().scroll_up(*args, **kwargs)
+
+
 class CustomApp(App):
     CSS_PATH = "fimf.css"
     BINDINGS = [
@@ -37,8 +59,12 @@ class CustomApp(App):
         self.button_replace = Button("Replace All", id="btn_replace", variant="warning")
         self.button_quit = Button("Quit (CTRL+C)", id="btn_quit", variant="error")
         self.label_results = Label("Results", id="lb_results")
-        self.search_results = TextLog(markup=True, classes="results")
-        self.replace_results = TextLog(markup=True, classes="results")
+        self.search_results = PartneredTextLog(markup=True, id="tl_search_res", classes="results")
+        self.replace_results = PartneredTextLog(markup=True, id="tl_replace_res", classes="results")
+
+        self.search_results.partner = self.replace_results
+        self.replace_results.partner = self.search_results
+
         self.statusbar = Label("no search results yet", id="statusbar", classes="")
 
         self.search_result = None
