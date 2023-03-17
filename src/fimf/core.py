@@ -180,12 +180,19 @@ class CustomApp(App):
 
 class HelpScreen(Screen):
     def compose(self) -> ComposeResult:
+
+        self.btn_cancel = Button("Cancel (go back)", variant="primary", id="cancel")
+        self.btn_quit = Button("Quit", variant="error", id="quit")
+
         yield Grid(
             Static("This modal dialog will be the help screen in the future", id="question"),
-            Button("Quit", variant="error", id="quit"),
-            Button("Cancel", variant="primary", id="quit"),
+            self.btn_cancel,
+            self.btn_quit,
             id="dialog",
         )
+
+    def on_mount(self):
+        self.btn_cancel.focus()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "quit":
