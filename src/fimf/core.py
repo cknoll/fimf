@@ -40,8 +40,9 @@ class PartneredTextLog(TextLog):
 class CustomApp(App):
     CSS_PATH = "fimf.css"
     BINDINGS = [
-        ("f1", "help", "show help"),
+        ("f1", "help", "help"),
         ("f3", "do_search", "search"),
+        ("f10", "open_menu", "menu"),
         ("escape", "cmd_select", "command mode"),
         ("p", "plain_text_select", "mode: plain text"),
         ("e", "escape_seq_select", "mode: escape-sequences"),
@@ -57,7 +58,7 @@ class CustomApp(App):
 
         self.button_search = Button("Search (F3)", id="btn_search", variant="primary")
         self.button_replace = Button("Replace All", id="btn_replace", variant="warning")
-        self.button_quit = Button("Quit (CTRL+C)", id="btn_quit", variant="error")
+        self.button_menu = Button("Menu (F10)", id="btn_menu")
         self.label_results = Label("Results", id="lb_results")
         self.search_results = PartneredTextLog(markup=True, id="tl_search_res", classes="results")
         self.replace_results = PartneredTextLog(markup=True, id="tl_replace_res", classes="results")
@@ -71,7 +72,7 @@ class CustomApp(App):
 
         yield self.intro
         with Horizontal(id="cntn_input_fields2", classes="cntn_input_fields"):
-            yield self.button_quit
+            yield self.button_menu
             yield self.input_files
 
         with Horizontal(id="cntn_input_fields1", classes="cntn_input_fields"):
@@ -97,8 +98,8 @@ class CustomApp(App):
 
         if event.button.id == "btn_search":
             self.action_do_search()
-        elif event.button.id == "btn_quit":
-            self.exit()
+        elif event.button.id == "btn_menu":
+            self.push_screen(MenuScreen())
         elif event.button.id == "btn_replace":
             self.action_do_replace()
         else:
@@ -112,6 +113,10 @@ class CustomApp(App):
     def action_help(self) -> None:
         """toogle help"""
         self.push_screen(HelpScreen())
+
+    def action_open_menu(self) -> None:
+        """toogle menu"""
+        self.push_screen(MenuScreen())
 
     def action_cmd_select(self) -> None:
         self.screen.set_focus(None)
@@ -179,21 +184,41 @@ class CustomApp(App):
             log("Cannot replace: no search result available.")
 
 
+class MenuScreen(Screen):
+    def compose(self) -> ComposeResult:
+
+        self.button_cancel = Button("Cancel (go back)", variant="primary", id="cancel")
+        self.button_quit = Button("Quit (CTRL+C)", id="quit", variant="error")
+
+        yield Static("This modal dialog will contain the (settings) menu in the future", id="question")
+        with Horizontal(id="cntn_buttons"):
+            yield self.button_cancel
+            yield self.button_quit
+
+    def on_mount(self):
+        self.button_cancel.focus()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "quit":
+            self.app.exit()
+        else:
+            self.app.pop_screen()
+
+
 class HelpScreen(Screen):
     def compose(self) -> ComposeResult:
 
-        self.btn_cancel = Button("Cancel (go back)", variant="primary", id="cancel")
-        self.btn_quit = Button("Quit", variant="error", id="quit")
+        self.button_cancel = Button("Cancel (go back)", variant="primary", id="cancel")
+        self.button_quit = Button("Quit", variant="error", id="quit")
 
-        yield Grid(
-            Static("This modal dialog will be the help screen in the future", id="question"),
-            self.btn_cancel,
-            self.btn_quit,
-            id="dialog",
-        )
+        yield Static("This modal dialog will be the help screen in the future", id="question")
+
+        with Horizontal(id="cntn_buttons"):
+            yield self.button_cancel
+            yield self.button_quit
 
     def on_mount(self):
-        self.btn_cancel.focus()
+        self.button_cancel.focus()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "quit":
