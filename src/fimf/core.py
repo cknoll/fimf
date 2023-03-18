@@ -50,6 +50,7 @@ class FimfApp(App):
     def compose(self) -> ComposeResult:
 
         self.intro = Label("fimf – find and replace in multiple files", id="lb_intro")
+        self.intro_hint = Label("(use TAB or Shift+TAB to navigate)", id="lb_intro_hint")
         self.input_files = Input(placeholder="file pattern", id="in_files", classes="input_field")
         self.input_search = Input(placeholder="search pattern", id="in_search", classes="input_field")
         self.input_replace = Input(placeholder="replace pattern", id="in_replace", classes="input_field")
@@ -68,7 +69,10 @@ class FimfApp(App):
 
         self.search_result_store = None
 
-        yield self.intro
+        with Vertical(id="cntn_intro"):
+            yield self.intro
+            yield self.intro_hint
+
         with Horizontal(id="cntn_input_fields2", classes="cntn_input_fields"):
             yield self.button_menu
             yield self.input_files
@@ -105,7 +109,6 @@ class FimfApp(App):
             pass
 
     def on_input_submitted(self, message: Input.Submitted) -> None:
-        print("xxx", dir(message), message.sender, message.value)
         self.screen.focus_next()
 
     def action_help(self) -> None:

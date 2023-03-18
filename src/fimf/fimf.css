@@ -14,12 +14,9 @@ Button, .results, Input {
     border: round $accent;
 }
 
-#lb_intro {
+#lb_intro, #lb_intro_hint {
     content-align: center middle;
-    height: 3;
-    margin: 2;
-    text-style: bold;
-    background: $secondary-background;
+    height: 1;
     width: 100%;
 }
 
@@ -30,6 +27,18 @@ Button, .results, Input {
 /*     offset: 3w 0; */
 
 }
+
+#cntn_intro {
+    align: center middle;
+    width: 100w;
+    height: 4;
+    margin: 2;
+    text-style: bold;
+    background: $secondary-background;
+
+}
+
+
 #cntn_buttons {
 
     align: center middle;
