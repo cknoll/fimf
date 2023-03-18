@@ -1,17 +1,16 @@
 import os
 import re
-from collections import defaultdict
 import fnmatch
 from collections import UserDict
 
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, Vertical, Grid
+from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import Static, Input, Footer, Button, TextLog, Label
 from textual import log
 
 
-# note: log-output is visible if this application is stated with `textual run --dev <script.py>`
+# note: log-output is visible if this application is stated with `textual run --dev main.py`
 # and `textual console` in another window
 
 
