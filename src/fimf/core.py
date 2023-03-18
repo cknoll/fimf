@@ -42,7 +42,7 @@ class FimfApp(App):
     BINDINGS = [
         ("f1", "help", "help"),
         ("f3", "do_search", "search"),
-        ("f4", "do_replacement", "replace"),
+        ("f4", "do_replace", "replace"),
         ("f10", "open_menu", "menu"),
         ("escape", "esc_pressed", "command mode"),
     ]
@@ -54,8 +54,8 @@ class FimfApp(App):
         self.input_search = Input(placeholder="search pattern", id="in_search", classes="input_field")
         self.input_replace = Input(placeholder="replace pattern", id="in_replace", classes="input_field")
 
-        self.button_search = Button("Search (F3)", id="btn_search", variant="primary")
-        self.button_replace = Button("Replace All", id="btn_replace", variant="warning")
+        self.button_search = Button("search (F3)", id="btn_search", variant="primary")
+        self.button_replace = Button("replace all (F4)", id="btn_replace", variant="warning")
         self.button_menu = Button("Menu (F10)", id="btn_menu")
         self.label_results = Label("Results", id="lb_results")
         self.search_results = PartneredTextLog(markup=True, id="tl_search_res", classes="results")
@@ -66,7 +66,7 @@ class FimfApp(App):
 
         self.statusbar = Label("no search results yet", id="statusbar", classes="")
 
-        self.search_result = None
+        self.search_result_store = None
 
         yield self.intro
         with Horizontal(id="cntn_input_fields2", classes="cntn_input_fields"):
@@ -127,7 +127,7 @@ class FimfApp(App):
     def action_do_search(self):
         file_pattern = self.input_files.value
         search_pattern = self.input_search.value
-        replace_pattern = self.input_replace.value
+        self.replace_pattern = self.input_replace.value
 
         # for testing
         if not file_pattern:
@@ -135,9 +135,9 @@ class FimfApp(App):
         if not search_pattern:
             search_pattern = "abcde"
             self.input_search.insert_text_at_cursor(search_pattern)
-        if not replace_pattern:
-            replace_pattern = "ABC"
-            self.input_replace.insert_text_at_cursor(replace_pattern)
+        if not self.replace_pattern:
+            self.replace_pattern = "ABC"
+            self.input_replace.insert_text_at_cursor(self.replace_pattern)
 
         self.search_results.clear()
         self.replace_results.clear()
@@ -146,13 +146,16 @@ class FimfApp(App):
             return
 
         try:
-            search_pattern = re.compile(search_pattern)
+            self.compiled_search_pattern = re.compile(search_pattern)
         except re.error as ex:
             self.search_results.write(f"regex error: {ex}")
             return
 
-        startpath = os.path.abspath("./")
-        results = find_pattern(startpath, search_pattern, file_pattern, replace_pattern)
+        self.startpath = os.path.abspath("./")
+        results = find_pattern(self.startpath, file_pattern, self.compiled_search_pattern, self.replace_pattern)
+        self._preview_search_results(results)
+
+    def _preview_search_results(self, results):
         indent = " " * 0
 
         file_count = 0
@@ -162,7 +165,7 @@ class FimfApp(App):
             if not matches:
                 continue
 
-            localpath = path.replace(startpath, "./")
+            localpath = path.replace(self.startpath, ".")
             lm = len(matches)
             file_count += 1
             match_count += lm
@@ -182,9 +185,28 @@ class FimfApp(App):
         self.statusbar.update(f"found {match_count} matches in {file_count} files (of {results.total_files} files)")
         self.statusbar.add_class("sb_active")
 
+        # seve the search result for late usage
+        self.search_result_store = results
+
     def action_do_replace(self):
-        if self.search_result is None:
-            log("Cannot replace: no search result available.")
+        if self.search_result_store is None:
+            self.statusbar.update("Cannot replace: no search result available.")
+            return
+
+        file_count = 0
+        for filepath, matches in self.search_result_store.items():
+            log("p", filepath)
+            with open(filepath) as fp:
+                s = fp.read()
+
+                s = self.compiled_search_pattern.sub(self.replace_pattern, s)
+            with open(filepath, "w") as fp:
+                fp.write(s)
+            file_count += 1
+
+            log("m", matches)
+            break
+        self.statusbar.update(f"replacements performed in {file_count} files")
 
 
 class MenuScreen(Screen):
@@ -281,7 +303,15 @@ def find_matches(filename, compiled_pattern, replace_pattern):
     return matches
 
 
-def find_pattern(directory, search_pattern, file_pattern, replace_pattern):
+def find_pattern(directory, file_pattern, search_pattern, replace_pattern):
+    """
+    :param directory:
+    :param file_pattern:
+    :param compiled_search_pattern:
+    :param replace_pattern:
+
+    Note: replace_pattern is used here for the sake of preview only
+    """
     results = UserDict()
     results.total_files = 0
     for path, dirs, files in os.walk(os.path.abspath(directory)):
