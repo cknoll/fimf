@@ -268,6 +268,8 @@ class Match:
         self.line = line.rstrip("\n")
         self.re_match = match
 
+        start_end_template = r"[#A0A0A0]{}[/]"
+
         i_start, i_end = match.span(0)
 
         full_match = match.group(0)
@@ -280,6 +282,9 @@ class Match:
             hl_txt = full_match[:l_max]
             txt0 = ""
             txt1 = ""
+            start_char = start_end_template.format("…")
+            end_char = start_end_template.format("…")
+
         else:
             l0 = diff // 2
             l1 = diff - l0
@@ -287,19 +292,27 @@ class Match:
 
             i0 = i_start - l0
             if i0 < 0:
+                # prefix part is shorter than what would be possible
                 i0 = 0
+                start_char = start_end_template.format("↦")
+            else:
+                start_char = start_end_template.format("…")
 
             i1 = i_end + l1
             if i1 > l_line:
                 i1 = l_line
+                end_char = start_end_template.format("⏎")
+            else:
+                end_char = start_end_template.format("…")
+
             hl_txt = full_match
             txt0 = line[i0:i_start]
             txt1 = line[i_end:i1]
 
-        self.context_str = f"…{txt0}[#F0A0F0 on #305030]{hl_txt}[/]{txt1.rstrip()}…"
+        self.context_str = f"{start_char}{txt0}[#F0A0F0 on #305030]{hl_txt}[/]{txt1.rstrip()}{end_char}"
 
         if rplmt is not None:
-            self.context_rpl_str = f"…{txt0}[#F0A0F0 on #303050]{rplmt}[/]{txt1.rstrip()}…"
+            self.context_rpl_str = f"{start_char}{txt0}[#F0A0F0 on #303050]{rplmt}[/]{txt1.rstrip()}{end_char}"
         else:
             self.context_rpl_str = self.context_str
 
