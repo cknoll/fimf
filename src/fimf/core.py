@@ -322,7 +322,8 @@ def find_matches(filename, compiled_pattern, replace_pattern):
     with open(filename, "r") as f:
         for i, line in enumerate(f, start=1):
             for match in re.finditer(compiled_pattern, line):
-                matches.append(Match(i, line, match, replace_pattern))
+                rplmt = compiled_pattern.sub(replace_pattern, match.group(0))
+                matches.append(Match(i, line, match, rplmt))
     return matches
 
 
@@ -345,17 +346,6 @@ def find_pattern(directory, file_pattern, search_pattern, replace_pattern):
             results[filepath] = matches
 
     return results
-
-
-def findReplace(directory, find, replace, filePattern):
-    for path, dirs, files in os.walk(os.path.abspath(directory)):
-        for filename in fnmatch.filter(files, filePattern):
-            filepath = os.path.join(path, filename)
-            with open(filepath) as f:
-                s = f.read()
-            s = s.replace(find, replace)
-            with open(filepath, "w") as f:
-                f.write(s)
 
 
 def main():
