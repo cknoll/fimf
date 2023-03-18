@@ -208,11 +208,8 @@ class FimfApp(App):
                 fp.write(s)
             file_count += 1
 
-            log("m", matches)
-            break
-
         self.statusbar.remove_class(*self.statusbar.classes)
-        self.statusbar.add_class("sb_active")
+        self.statusbar.add_class("sb_success")
         self.statusbar.update(f"replacements performed in {file_count} files")
 
 

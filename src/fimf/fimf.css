@@ -115,6 +115,10 @@ Button {
     background: $warning-darken-3;
 }
 
+#statusbar.sb_success {
+    background: $success-darken-3;
+}
+
 /* for help screen */
 #dialog {
     grid-size: 2;
