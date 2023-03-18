@@ -65,7 +65,10 @@ class FimfApp(App):
         self.search_results.partner = self.replace_results
         self.replace_results.partner = self.search_results
 
-        self.statusbar = Label("no search results yet", id="statusbar", classes="")
+        self.statusbar = Label("no search results yet", id="statusbar")
+
+        self.startpath = os.path.abspath("./")
+        self.workdirbar = Label(f"workdir: {self.startpath}", id="workdirbar")
 
         self.search_result_store = None
 
@@ -90,6 +93,7 @@ class FimfApp(App):
             yield self.replace_results
 
         yield self.statusbar
+        yield self.workdirbar
         yield Footer()
 
     def on_mount(self) -> None:
@@ -154,7 +158,6 @@ class FimfApp(App):
             self.search_results.write(f"regex error: {ex}")
             return
 
-        self.startpath = os.path.abspath("./")
         results = find_pattern(self.startpath, file_pattern, self.compiled_search_pattern, self.replace_pattern)
         self._preview_search_results(results)
 
