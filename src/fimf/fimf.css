@@ -111,6 +111,10 @@ Button {
     background: $accent-darken-3;
 }
 
+#statusbar.sb_warning {
+    background: $warning-darken-3;
+}
+
 /* for help screen */
 #dialog {
     grid-size: 2;

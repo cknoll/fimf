@@ -183,6 +183,8 @@ class FimfApp(App):
         # improve visual presentation of the result
         self.search_results.focus()
         self.statusbar.update(f"found {match_count} matches in {file_count} files (of {results.total_files} files)")
+
+        self.statusbar.remove_class(*self.statusbar.classes)
         self.statusbar.add_class("sb_active")
 
         # seve the search result for late usage
@@ -191,6 +193,8 @@ class FimfApp(App):
     def action_do_replace(self):
         if self.search_result_store is None:
             self.statusbar.update("Cannot replace: no search result available.")
+            self.statusbar.remove_class(*self.statusbar.classes)
+            self.statusbar.add_class("sb_warning")
             return
 
         file_count = 0
@@ -206,6 +210,9 @@ class FimfApp(App):
 
             log("m", matches)
             break
+
+        self.statusbar.remove_class(*self.statusbar.classes)
+        self.statusbar.add_class("sb_active")
         self.statusbar.update(f"replacements performed in {file_count} files")
 
 
