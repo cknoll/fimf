@@ -7,7 +7,7 @@
 
 ## Development Status
 
-"pre-alpha" (not yet useful)
+"alpha" (probabbly buggy but might yet be useful)
 
 ## Installation
 
