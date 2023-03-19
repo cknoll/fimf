@@ -410,15 +410,18 @@ def find_pattern(directory, file_pattern, search_pattern, replace_pattern):
 
     Note: replace_pattern is used here for the sake of preview only
     """
-    results = UserDict()
-    results.total_files = 0
+    results = {}
+    total_files = 0
     for path, dirs, files in os.walk(os.path.abspath(directory)):
         for filename in fnmatch.filter(files, file_pattern):
-            results.total_files += 1
+            total_files += 1
             filepath = os.path.join(path, filename)
             matches = find_matches(filepath, search_pattern, replace_pattern)
             results[filepath] = matches
 
+    # construct the final return value (with desired ordering and custom attribute)
+    results = UserDict(sorted(results.items()))
+    results.total_files = total_files
     return results
 
 
