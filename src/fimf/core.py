@@ -127,6 +127,7 @@ class MainScreen(Screen):
     def action_do_search(self):
         file_pattern = self.input_files.value
         search_pattern = self.input_search.value
+
         self.replace_pattern = self.input_replace.value
 
         # for testing
@@ -138,6 +139,16 @@ class MainScreen(Screen):
         if not self.replace_pattern:
             self.replace_pattern = "ABC"
             self.input_replace.insert_text_at_cursor(self.replace_pattern)
+
+        mode = self.app.settings["mode"]
+        if mode == "plain-text":
+            search_pattern = re.escape(search_pattern)
+            self.replace_pattern = self.replace_pattern.replace("\\", r"\\")
+        elif mode == "escape-sequences":
+            search_pattern = re.escape(search_pattern)
+            for esc_seq in [r"\n", r"\r", r"\t"]:
+                # undo escaping for some sequences
+                search_pattern = search_pattern.replace(f"\\{esc_seq}", esc_seq)
 
         self.search_results.clear()
         self.replace_results.clear()
