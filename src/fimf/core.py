@@ -41,6 +41,7 @@ class MainScreen(Screen):
         ("f1", "help", "help"),
         ("f3", "do_search", "search"),
         ("f4", "do_replace", "replace"),
+        ("f9", "screenshot", "screenshot"),
         ("f10", "open_menu", "menu"),
     ]
 
@@ -116,6 +117,9 @@ class MainScreen(Screen):
     def action_help(self) -> None:
         """toogle help"""
         self.app.push_screen(HelpScreen())
+
+    def action_screenshot(self):
+        self.app.save_screenshot()
 
     def action_open_menu(self) -> None:
         """toogle menu"""
