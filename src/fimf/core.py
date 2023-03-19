@@ -119,7 +119,8 @@ class MainScreen(Screen):
         self.app.push_screen(HelpScreen())
 
     def action_screenshot(self):
-        self.app.save_screenshot()
+        """save a screenshot (useful during development)"""
+        self.app.save_screenshot("fimf.svg")
 
     def action_open_menu(self) -> None:
         """toogle menu"""
