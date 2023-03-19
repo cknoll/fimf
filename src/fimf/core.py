@@ -137,12 +137,13 @@ class MainScreen(Screen):
 
         # for testing
         if not file_pattern:
-            file_pattern = "*"
+            file_pattern = "*.njk"
+            self.input_files.insert_text_at_cursor(file_pattern)
         if not search_pattern:
-            search_pattern = "abcde"
+            search_pattern = "widht"
             self.input_search.insert_text_at_cursor(search_pattern)
         if not self.replace_pattern:
-            self.replace_pattern = "ABC"
+            self.replace_pattern = "with"
             self.input_replace.insert_text_at_cursor(self.replace_pattern)
 
         mode = self.app.settings["mode"]
