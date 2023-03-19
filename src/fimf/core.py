@@ -65,8 +65,9 @@ class MainScreen(Screen):
 
         self.statusbar = Label("no search results yet", id="statusbar")
 
-        self.startpath = os.path.abspath("./")
-        self.workdirbar = Label(f"workdir: {self.startpath}", id="workdirbar")
+        displaypath = self.startpath = os.path.abspath("./")
+        displaypath = "/home/ck/projekte/fimf/fimf/test/testdata"
+        self.workdirbar = Label(f"workdir: {displaypath}", id="workdirbar")
 
         self.search_result_store = None
 
