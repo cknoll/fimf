@@ -209,7 +209,9 @@ class MainScreen(Screen):
 
         file_count = 0
         for filepath, matches in self.search_result_store.items():
-            log("p", filepath)
+            log("p", filepath, len(matches))
+            if len(matches) == 0:
+                continue
             with open(filepath) as fp:
                 s = fp.read()
 
@@ -220,7 +222,12 @@ class MainScreen(Screen):
 
         self.statusbar.remove_class(*self.statusbar.classes)
         self.statusbar.add_class("sb_success")
-        self.statusbar.update(f"replacements performed in {file_count} files")
+
+        if file_count == 1:
+            file_word = "file"
+        else:
+            file_word = "files"
+        self.statusbar.update(f"replacements performed in {file_count} {file_word}")
 
 
 class MenuScreen(Screen):
