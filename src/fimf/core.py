@@ -6,7 +6,7 @@ from collections import UserDict
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
-from textual.widgets import Static, Input, Footer, Button, TextLog, Label
+from textual.widgets import Static, Input, Footer, Button, TextLog, Label, ListView, ListItem
 from textual import log
 
 
@@ -36,14 +36,12 @@ class PartneredTextLog(TextLog):
         super().scroll_up(*args, **kwargs)
 
 
-class FimfApp(App):
-    CSS_PATH = "fimf.css"
+class MainScreen(Screen):
     BINDINGS = [
         ("f1", "help", "help"),
         ("f3", "do_search", "search"),
         ("f4", "do_replace", "replace"),
         ("f10", "open_menu", "menu"),
-        ("escape", "esc_pressed", "command mode"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -93,6 +91,7 @@ class FimfApp(App):
 
         yield self.statusbar
         yield self.workdirbar
+        yield self.app.modebar
         yield Footer()
 
     def on_mount(self) -> None:
@@ -104,7 +103,7 @@ class FimfApp(App):
         if event.button.id == "btn_search":
             self.action_do_search()
         elif event.button.id == "btn_menu":
-            self.push_screen(MenuScreen())
+            self.app.push_screen(MenuScreen())
         elif event.button.id == "btn_replace":
             self.action_do_replace()
         else:
@@ -116,19 +115,14 @@ class FimfApp(App):
 
     def action_help(self) -> None:
         """toogle help"""
-        self.push_screen(HelpScreen())
+        self.app.push_screen(HelpScreen())
 
     def action_open_menu(self) -> None:
         """toogle menu"""
-        self.push_screen(MenuScreen())
+        self.app.push_screen(MenuScreen())
 
     def action_cmd_select(self) -> None:
-        self.screen.set_focus(None)
-
-    def action_esc_pressed(self) -> None:
-
-        if self.app.screen_stack[-1].id != "_default":
-            self.app.pop_screen()
+        self.set_focus(None)
 
     def action_do_search(self):
         file_pattern = self.input_files.value
@@ -219,24 +213,54 @@ class FimfApp(App):
 
 
 class MenuScreen(Screen):
+
+    BINDINGS = [
+        ("escape", "esc_pressed", "cancel"),
+    ]
     def compose(self) -> ComposeResult:
 
         self.button_cancel = Button("Cancel (go back)", variant="primary", id="cancel")
         self.button_quit = Button("Quit (CTRL+C)", id="quit", variant="error")
 
-        yield Static("This modal dialog will contain the (settings) menu in the future", id="question")
+        yield Static("fimf - settings", id="screen-heading")
+
+        with Vertical(id="ctn-menu"):
+            yield Label("search mode:")
+            with ListView(id="mode-selector"):
+                yield ListItem(Label("plain-text"), id="li_plain-text")
+                yield ListItem(Label("escape-sequences"), id="li_escape-sequences")
+                yield ListItem(Label("regex"), id="li_regex")
+
         with Horizontal(id="cntn_buttons"):
             yield self.button_cancel
             yield self.button_quit
 
+        # TODO: this is preferrable but does not work
+        # yield self.app.modebar
+
+        self.footer = Footer()
+        self.footer.styles.dock = ""
+        with Vertical(id="ctn-footer"):
+            yield Label(f"mode: {self.app.settings['mode']}", id="modebar")
+            yield self.footer
+
     def on_mount(self):
-        self.button_cancel.focus()
+        self.query_one("#mode-selector").focus()
+        log("xxx\n"*5)
+        log(self.button_quit.styles.dock)
+
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "quit":
             self.app.exit()
         else:
             self.app.pop_screen()
+
+    def on_list_view_selected(self, message) -> None:
+        # log(dir(message.item))
+        log(message.item.id)
+        self.app.update_mode(message.item.id[3:])
+        self.app.pop_screen()
 
 
 class HelpScreen(Screen):
@@ -245,7 +269,7 @@ class HelpScreen(Screen):
         self.button_cancel = Button("Cancel (go back)", variant="primary", id="cancel")
         self.button_quit = Button("Quit", variant="error", id="quit")
 
-        yield Static("This modal dialog will be the help screen in the future", id="question")
+        yield Static("This modal dialog will be the help screen in the future", id="screen-heading")
 
         with Horizontal(id="cntn_buttons"):
             yield self.button_cancel
@@ -259,6 +283,35 @@ class HelpScreen(Screen):
             self.app.exit()
         else:
             self.app.pop_screen()
+
+
+class FimfApp(App):
+    CSS_PATH = "fimf.css"
+    # SCREENS = {"main": MainScreen()}
+    settings = {"mode": "plain-text"}
+
+    def compose(self) -> ComposeResult:
+        self.modebar = Label("", id="modebar")
+        self.update_mode()
+        return []
+
+    def on_mount(self) -> None:
+        self.push_screen(MainScreen())
+
+    def update_mode(self, mode: str = None):
+        if mode is None:
+            mode = self.settings["mode"]
+        else:
+
+            self.settings["mode"] = mode
+
+        self.modebar.update(f"mode: {self.settings['mode']}")
+
+    def action_esc_pressed(self) -> None:
+
+        if self.screen_stack[-1].id != "_default":
+            self.pop_screen()
+
 
 
 class Match:

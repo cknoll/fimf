@@ -110,7 +110,8 @@ Button {
 }
 
 
-#statusbar, #workdirbar {
+
+#statusbar, #workdirbar, #modebar {
     width: 100%;
     height: 1;
     margin: 0 1 0 2;
@@ -121,7 +122,7 @@ Button {
     background: $background-lighten-3;
 }
 
-#workdirbar {
+#workdirbar, #modebar {
     background: $background-lighten-2;
     color: $text-muted;
 }
@@ -137,6 +138,10 @@ Button {
 #statusbar.sb_success {
     background: $success-darken-3;
 }
+#workdirbar, #modebar {
+
+    align: center bottom;
+}
 
 /* for help screen */
 #dialog {
@@ -145,8 +150,42 @@ Button {
     padding: 1 2;
 }
 
-#question {
+#screen-heading {
     content-align: center middle;
     width: 100%;
     margin-top: 8;
+}
+
+/* for settings screen */
+
+
+#ctn-footer{
+
+    height: 50vh;
+    align: center bottom;
+
+/*  dock: bottom; */
+
+}
+
+#ctn-menu {
+
+    align: center middle;
+    width: 100%;
+    margin: 3;
+    height: 8;
+
+}
+
+#mode-selector {
+
+    content-align: center middle;
+    height: 5;
+    border: blank $accent;
+
+}
+
+#mode-selector:focus {
+    border: round $accent;
+
 }
