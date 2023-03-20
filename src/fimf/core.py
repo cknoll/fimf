@@ -16,24 +16,17 @@ from textual import log
 
 class PartneredTextLog(TextLog):
     """
-    This class implements scrolling such that any scrolling event also triggers the scrolling of a partner widget.
+    This class implements scrolling such that a scrolling event also triggers the scrolling of the partner widget.
+
+    Note: The partner-widget `self.partner` must be set manually.
     """
 
-    # Down
-    def scroll_down(self, *args, **kwargs):
-        self.pure_scroll_down(*args, **kwargs)
-        self.partner.pure_scroll_down(*args, **kwargs)
+    def scroll_to(self, *args, **kwargs):
+        self.pure_scroll_to(*args, **kwargs)
+        self.partner.pure_scroll_to(*args, **kwargs)
 
-    def pure_scroll_down(self, *args, **kwargs):
-        super().scroll_down(*args, **kwargs)
-
-    # Up
-    def scroll_up(self, *args, **kwargs):
-        self.pure_scroll_up(*args, **kwargs)
-        self.partner.pure_scroll_up(*args, **kwargs)
-
-    def pure_scroll_up(self, *args, **kwargs):
-        super().scroll_up(*args, **kwargs)
+    def pure_scroll_to(self, *args, **kwargs):
+        super().scroll_to(*args, **kwargs)
 
 
 class MainScreen(Screen):
