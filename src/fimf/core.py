@@ -59,7 +59,9 @@ class MainScreen(Screen):
         self.statusbar = Label("no search results yet", id="statusbar")
 
         displaypath = self.startpath = os.path.abspath("./")
-        displaypath = "/home/ck/projekte/fimf/fimf/test/testdata"
+
+        # meaningful path for screenshot
+        # displaypath = "/home/cark/projekte/fimf/fimf/test/testdata"
         self.workdirbar = Label(f"workdir: {displaypath}", id="workdirbar")
 
         self.search_result_store = None
@@ -90,7 +92,8 @@ class MainScreen(Screen):
         yield Footer()
 
     def on_mount(self) -> None:
-        # self.input_files.focus()
+        # search all files by default
+        self.input_files.insert_text_at_cursor("*")
         self.input_search.focus()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -129,16 +132,17 @@ class MainScreen(Screen):
 
         self.replace_pattern = self.input_replace.value
 
-        # for testing
-        if not file_pattern:
-            file_pattern = "*.njk"
-            self.input_files.insert_text_at_cursor(file_pattern)
-        if not search_pattern:
-            search_pattern = "widht"
-            self.input_search.insert_text_at_cursor(search_pattern)
-        if not self.replace_pattern:
-            self.replace_pattern = "with"
-            self.input_replace.insert_text_at_cursor(self.replace_pattern)
+        if 0:
+            # for manual testing and screenshot production
+            if not file_pattern:
+                file_pattern = "*.njk"
+                self.input_files.insert_text_at_cursor(file_pattern)
+            if not search_pattern:
+                search_pattern = "widht"
+                self.input_search.insert_text_at_cursor(search_pattern)
+            if not self.replace_pattern:
+                self.replace_pattern = "with"
+                self.input_replace.insert_text_at_cursor(self.replace_pattern)
 
         mode = self.app.settings["mode"]
         if mode == "plain-text":
