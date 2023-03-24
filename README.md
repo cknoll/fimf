@@ -7,7 +7,11 @@
 
 ## Development Status
 
-"alpha" (probabbly buggy but might yet be useful)
+This software was developed and tested with the [textual](textual.textualize.io/) framework in version 0.15.1.
+
+## Caution
+
+Though it might already be quite useful, fimf is currently still in "alpha" status, i.e., it is probably buggy. Please make a backup of your data files before manipulating them with fimf. Also, search-and-replace across many files can go wrong (due to bugs or due to user input) and there is **no undo button** in fimf.
 
 ## Installation
 
