@@ -42,7 +42,7 @@ class MainScreen(Screen):
 
         self.intro = Label("fimf – find and replace in multiple files", id="lb_intro")
         self.intro_hint = Label("(use TAB or Shift+TAB to navigate)", id="lb_intro_hint")
-        self.input_files = Input(placeholder="file pattern", id="in_files", classes="input_field")
+        self.input_files = Input(placeholder="file pattern (empty ≙ *)", id="in_files", classes="input_field")
         self.input_search = Input(placeholder="search pattern", id="in_search", classes="input_field")
         self.input_replace = Input(placeholder="replace pattern (deactivated)", id="in_replace", classes="input_field")
 
@@ -93,8 +93,6 @@ class MainScreen(Screen):
         yield Footer()
 
     def on_mount(self) -> None:
-        # search all files by default
-        self.input_files.insert_text_at_cursor("*")
         self.input_search.focus()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -171,6 +169,10 @@ class MainScreen(Screen):
             if not self.replace_pattern:
                 self.replace_pattern = "with"
                 self.input_replace.insert_text_at_cursor(self.replace_pattern)
+
+        # search all files by default
+        if not file_pattern:
+            file_pattern = "*"
 
         mode = self.app.settings["mode"]
         if mode == "plain-text":
