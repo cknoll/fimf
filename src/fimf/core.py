@@ -44,7 +44,7 @@ class MainScreen(Screen):
         self.intro_hint = Label("(use TAB or Shift+TAB to navigate)", id="lb_intro_hint")
         self.input_files = Input(placeholder="file pattern", id="in_files", classes="input_field")
         self.input_search = Input(placeholder="search pattern", id="in_search", classes="input_field")
-        self.input_replace = Input(placeholder="replace pattern", id="in_replace", classes="input_field")
+        self.input_replace = Input(placeholder="replace pattern (deactivated)", id="in_replace", classes="input_field")
 
         self.button_search = Button("search (F3)", id="btn_search", variant="primary")
         self.button_replace = Button("replace all (F4)", id="btn_replace", variant="warning")
@@ -110,6 +110,8 @@ class MainScreen(Screen):
 
     def on_input_submitted(self, message: Input.Submitted) -> None:
         self.screen.focus_next()
+        if message.input == self.input_replace:
+            message.input.placeholder = "replace pattern (empty string)"
 
     def action_help(self) -> None:
         """toogle help"""
@@ -131,6 +133,24 @@ class MainScreen(Screen):
         search_pattern = self.input_search.value
 
         self.replace_pattern = self.input_replace.value
+
+        # Rationale for the following: the default value for the replace pattern is an empty string
+        # to reduce the probabilty of accidentally overwriting the search matches with an empty string
+        # we require that the field has been manually edited (add and remove at least one character) to
+        # indeed submit an empty string as replace pattern
+        if self.replace_pattern == "":
+            if not self.app.settings["allow_empty_replace"]:
+                self.replace_results_enabled = False
+                self.replace_results.clear()
+                self.replace_results.write(
+                    "Replace with empty string is only allowed\nafter manually editing that field"
+                )
+            else:
+                self.replace_results_enabled = True
+        else:
+            self.replace_results_enabled = True
+
+        # warning at begining
 
         if 0:
             # for manual testing and screenshot production
@@ -155,7 +175,7 @@ class MainScreen(Screen):
                 search_pattern = search_pattern.replace(f"\\{esc_seq}", esc_seq)
 
         self.search_results.clear()
-        self.replace_results.clear()
+        self._safe_access_replace_results("clear")
         if not search_pattern:
             self.search_results.write("error: empty search pattern")
             return
@@ -168,6 +188,15 @@ class MainScreen(Screen):
 
         results = find_pattern(self.startpath, file_pattern, self.compiled_search_pattern, self.replace_pattern)
         self._preview_search_results(results)
+
+
+    def _safe_access_replace_results(self, cmd: str, arg: str = None):
+        if not self.replace_results_enabled:
+            return
+        if cmd == "write":
+            self.replace_results.write(arg)
+        elif cmd == "clear":
+            self.replace_results.clear()
 
     def _preview_search_results(self, results):
         indent = " " * 0
@@ -184,15 +213,15 @@ class MainScreen(Screen):
             file_count += 1
             match_count += lm
             self.search_results.write(f"[#ffcc00 on #6f94dc]{localpath} ({lm})")
-            self.replace_results.write(f"[#ffcc00 on #6f94dc]{localpath} ({lm})")
+            self._safe_access_replace_results("write", f"[#ffcc00 on #6f94dc]{localpath} ({lm})")
             for match_obj in matches:
                 lnbr = f"[white on blue]{match_obj.line_number:03d}:[/] "
                 self.search_results.write(f"{indent}{lnbr}{match_obj.context_str}")
-                self.replace_results.write(f"{indent}{lnbr}{match_obj.context_rpl_str}")
+                self._safe_access_replace_results("write", f"{indent}{lnbr}{match_obj.context_rpl_str}")
 
             # add an empty line after each file
             self.search_results.write(" ")
-            self.replace_results.write(" ")
+            self._safe_access_replace_results("write", " ")
 
         # improve visual presentation of the result
         self.search_results.focus()
@@ -310,7 +339,10 @@ class HelpScreen(Screen):
 class FimfApp(App):
     CSS_PATH = "fimf.css"
     # SCREENS = {"main": MainScreen()}
-    settings = {"mode": "plain-text"}
+    settings = {
+        "mode": "plain-text",
+        "allow_empty_replace": False,  # False (default) or True
+    }
 
     def compose(self) -> ComposeResult:
         self.modebar = Label("", id="modebar")
