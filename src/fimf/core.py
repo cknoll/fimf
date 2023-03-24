@@ -65,6 +65,7 @@ class MainScreen(Screen):
         self.workdirbar = Label(f"workdir: {displaypath}", id="workdirbar")
 
         self.search_result_store = None
+        self.replace_results_enabled = None
 
         with Vertical(id="cntn_intro"):
             yield self.intro
@@ -112,6 +113,7 @@ class MainScreen(Screen):
         self.screen.focus_next()
         if message.input == self.input_replace:
             message.input.placeholder = "replace pattern (empty string)"
+            self.app.settings["allow_empty_replace"] = True
 
     def action_help(self) -> None:
         """toogle help"""
@@ -233,11 +235,20 @@ class MainScreen(Screen):
         # seve the search result for late usage
         self.search_result_store = results
 
+    def print_statusbar_warning(self, txt):
+        self.statusbar.update(txt)
+        self.statusbar.remove_class(*self.statusbar.classes)
+        self.statusbar.add_class("sb_warning")
+
     def action_do_replace(self):
+
+        # TODO: ensure that search and replace patterns have not changed since last search
         if self.search_result_store is None:
-            self.statusbar.update("Cannot replace: no search result available.")
-            self.statusbar.remove_class(*self.statusbar.classes)
-            self.statusbar.add_class("sb_warning")
+            self.print_statusbar_warning("Cannot replace: no search result available.")
+            return
+
+        if not self.replace_results_enabled:
+            self.print_statusbar_warning("Cannot replace: no replace result available.")
             return
 
         file_count = 0
