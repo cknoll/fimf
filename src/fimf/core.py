@@ -306,6 +306,7 @@ class WarningScreen(Screen):
         if event.button.id == "quit":
             self.app.exit()
         else:
+            self.app.main_screen.on_mount()
             self.app.pop_screen()
 
     def action_scroll_left(self):
@@ -399,10 +400,11 @@ class FimfApp(App):
     def compose(self) -> ComposeResult:
         self.modebar = Label("", id="modebar")
         self.update_mode()
+        self.main_screen = MainScreen()
         return []
 
     def on_mount(self) -> None:
-        self.push_screen(MainScreen())
+        self.push_screen(self.main_screen)
         self.push_screen(WarningScreen())
 
     def update_mode(self, mode: str = None):
