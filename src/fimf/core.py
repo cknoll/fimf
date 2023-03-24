@@ -480,10 +480,15 @@ class Match:
 def find_matches(filename, compiled_pattern, replace_pattern):
     matches = []
     with open(filename, "r") as f:
-        for i, line in enumerate(f, start=1):
-            for match in re.finditer(compiled_pattern, line):
-                rplmt = compiled_pattern.sub(replace_pattern, match.group(0))
-                matches.append(Match(i, line, match, rplmt))
+        try:
+            lines = f.readlines()
+        except UnicodeDecodeError:
+            msg = f"Could not read data file: {filename}"
+            raise ValueError(msg)
+    for i, line in enumerate(lines, start=1):
+        for match in re.finditer(compiled_pattern, line):
+            rplmt = compiled_pattern.sub(replace_pattern, match.group(0))
+            matches.append(Match(i, line, match, rplmt))
     return matches
 
 
