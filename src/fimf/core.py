@@ -157,8 +157,6 @@ class MainScreen(Screen):
         else:
             self.replace_results_enabled = True
 
-        # warning at begining
-
         if 0:
             # for manual testing and screenshot production
             if not file_pattern:
@@ -199,7 +197,6 @@ class MainScreen(Screen):
 
         results = find_pattern(self.startpath, file_pattern, self.compiled_search_pattern, self.replace_pattern)
         self._preview_search_results(results)
-
 
     def _safe_access_replace_results(self, cmd: str, arg: str = None):
         if not self.replace_results_enabled:
@@ -317,11 +314,13 @@ class WarningScreen(Screen):
     def action_scroll_right(self):
         self.focus_next()
 
+
 class MenuScreen(Screen):
 
     BINDINGS = [
         ("escape", "esc_pressed", "cancel"),
     ]
+
     def compose(self) -> ComposeResult:
 
         self.button_cancel = Button("Cancel (go back)", variant="primary", id="cancel")
@@ -351,9 +350,8 @@ class MenuScreen(Screen):
 
     def on_mount(self):
         self.query_one("#mode-selector").focus()
-        log("xxx\n"*5)
+        log("xxx\n" * 5)
         log(self.button_quit.styles.dock)
-
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "quit":
@@ -420,7 +418,6 @@ class FimfApp(App):
 
         if self.screen_stack[-1].id != "_default":
             self.pop_screen()
-
 
 
 class Match:
