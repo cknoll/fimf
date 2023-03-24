@@ -28,21 +28,25 @@ Button, .results, Input {
 
 }
 
+#cntn_outer_intro {
+    height: 6;
+    align: center middle;
+}
+
 #cntn_intro {
     align: center middle;
+    box-sizing: content-box;
     width: 100w;
     height: 4;
-    margin: 2;
+    margin: 0 2;
     text-style: bold;
     background: $secondary-background;
-
 }
 
 
 #cntn_buttons {
 
     align: center middle;
-/*     offset: 3w 0; */
     height: 5;
     width: 100w;
 
@@ -54,14 +58,14 @@ Button, .results, Input {
 
 .input_field {
 
-    width: 35;
+    width: 40;
     margin: 0 3 0 3;
     box-sizing: border-box;
     text-align: center;
 }
 
 Button {
-    width: 35;
+    width: 40;
     /* top right bottom left  */
     margin: 0 3 0 3;
     box-sizing: border-box;
@@ -93,7 +97,7 @@ Button {
 
 /*  outline is helpful for debugging    */
 /*     outline: solid red; */
-    height: 32;
+    height: 1fr;
     overflow-y: auto;
 
 }
@@ -101,8 +105,6 @@ Button {
 
 .results {
     width: 48%;
-/*     min-height: 25; */
-    height: 30;
     margin-left: 1;
     overflow-x: auto;
     overflow-y: auto;
@@ -110,11 +112,10 @@ Button {
 }
 
 
-
 #statusbar, #workdirbar, #modebar {
     width: 100%;
     height: 1;
-    margin: 0 1 0 2;
+    margin: 0 2 0 2;
     padding: 0 0;
 }
 

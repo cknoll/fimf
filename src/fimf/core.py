@@ -67,9 +67,10 @@ class MainScreen(Screen):
         self.search_result_store = None
         self.replace_results_enabled = None
 
-        with Vertical(id="cntn_intro"):
-            yield self.intro
-            yield self.intro_hint
+        with Vertical(id="cntn_outer_intro"):
+            with Vertical(id="cntn_intro"):
+                yield self.intro
+                yield self.intro_hint
 
         with Horizontal(id="cntn_input_fields2", classes="cntn_input_fields"):
             yield self.button_menu
