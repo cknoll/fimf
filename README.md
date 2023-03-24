@@ -13,11 +13,11 @@
 
 Development mode: Clone the repo and run `pip install -e .` from within that directory.
 
-Normal usage mode: `pip install fimf` (available soon)
+Normal usage mode: `pip install fimf`.
 
 
 ## Usage
 
-Call `fimf` (the gui should be self-explanatory, anyway: press `F1` for help).
+Call `fimf` (the [textual](textual.textualize.io/) user interface (TUI) should be self-explanatory).
 
 

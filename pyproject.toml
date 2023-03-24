@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 
 
 name = "fimf"
-description = "..."
+description = "command line (TUI) tool to find (and replace) patterns in multiple files"
 authors=[{name = "Carsten Knoll", email = "firstname.lastname@posteo.org"}]
 readme = "README.md"
 requires-python = ">=3.8"
@@ -26,7 +26,7 @@ classifiers=[
 
 
 [project.urls]
-Homepage = "..."
+Homepage = "https://github.com/cknoll/fimf"
 
 [project.scripts]
 fimf = "fimf.script:main"
