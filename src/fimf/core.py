@@ -111,7 +111,13 @@ class MainScreen(Screen):
 
     def on_input_submitted(self, message: Input.Submitted) -> None:
         self.screen.focus_next()
+
+    def on_input_changed(self, message: Input.Submitted) -> None:
+        # detect if input_replaced is edited manually
         if message.input == self.input_replace:
+            if self.app.settings["allow_empty_replace"]:
+                return
+
             message.input.placeholder = "replace pattern (empty string)"
             self.app.settings["allow_empty_replace"] = True
 
