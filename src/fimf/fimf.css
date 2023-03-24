@@ -103,6 +103,18 @@ Button {
 }
 
 
+.vspace1fr {
+    height: 1fr;
+}
+
+.warning {
+
+    margin: 1 5;
+    padding: 2;
+    background: $warning;
+    color: $text;
+    text-style: bold;
+}
 .results {
     width: 48%;
     margin-left: 1;

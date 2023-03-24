@@ -283,6 +283,40 @@ class MainScreen(Screen):
         self.statusbar.update(f"replacements performed in {file_count} {file_word}")
 
 
+class WarningScreen(Screen):
+    def compose(self) -> ComposeResult:
+
+        txt = """
+            This application is experimental. It may change your data in unexpected ways.
+            It is recommended to keep a backup copy of your data.
+        """
+        self.warning = Static(txt, classes="warning")
+
+        self.button_OK = Button("OK, I understand.", id="OK", variant="primary")
+        self.button_quit = Button("Quit (CTRL+C)", id="quit", variant="error")
+
+        yield Static("", classes="vspace1fr")
+        yield self.warning
+        with Horizontal(id="cntn_buttons"):
+            yield self.button_OK
+            yield self.button_quit
+        yield Static("", classes="vspace1fr")
+
+    def on_mount(self):
+        self.button_quit.focus()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "quit":
+            self.app.exit()
+        else:
+            self.app.pop_screen()
+
+    def action_scroll_left(self):
+        self.focus_next()
+
+    def action_scroll_right(self):
+        self.focus_next()
+
 class MenuScreen(Screen):
 
     BINDINGS = [
@@ -371,6 +405,7 @@ class FimfApp(App):
 
     def on_mount(self) -> None:
         self.push_screen(MainScreen())
+        self.push_screen(WarningScreen())
 
     def update_mode(self, mode: str = None):
         if mode is None:
